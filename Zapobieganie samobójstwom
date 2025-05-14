@@ -1,0 +1,13 @@
+# Zakaz samobójstw: czarny musi mieć oddech lub zbić
+for i in range(N):
+    for j in range(N):
+        if board[i][j] == empty: #Sprawdzamy tylko pola, które są puste bo tylko tam można rozważać ruch czarnego.
+            neighbors_free = [x[ni, nj] for ni, nj in neighbors(i, j) if board[ni][nj] == empty] #sąsiednie puste pola wokół czarnego (pola na które potencjalnie chcielibyśmy postawić czarny kamień)
+            neighbors_dead_white = [y[ni, nj] for ni, nj in neighbors(i, j) if board[ni][nj] == white] #białe pola w otoczeniu tego pustego miejsca (pola gdzie chcemy postawić czarny kamień)
+            #y to są białe do zbicia, x to jest to gdzie stawiamy kamienie
+            if neighbors_free or neighbors_dead_white: #jeżeli to pole ma białego sąsiada albo jest conajmniej 1 czarny sąsiad to to się wykona
+                model.addConstr(
+                    x[i, j] <= gp.quicksum(neighbors_free + neighbors_dead_white)
+                )
+        if not (neighbors_free or neighbors_dead_white):
+            model.addConstr(x[i, j] == 0)
